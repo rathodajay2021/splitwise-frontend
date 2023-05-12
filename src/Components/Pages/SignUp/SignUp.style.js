@@ -2,15 +2,15 @@ import styled from 'styled-components';
 import { COLORS, FONTS, responsive } from 'Styles/Constants';
 import OTPBackgroundImage from 'Assets/Images/wallpaper/loginBackground1.webp';
 
-export const LoginWrapper = styled.div`
+export const SignUpWrapper = styled.div`
     height: 100%;
     width: 100%;
     background-image: url(${OTPBackgroundImage});
 
-    .login-screen {
+    .sign-up-screen {
         background: ${COLORS.WHITE};
         height: fit-content;
-        width: 30%; //check
+        width: 30%;
         padding: 30px;
         border-radius: 15px;
 
@@ -37,9 +37,12 @@ export const LoginWrapper = styled.div`
             }
         }
 
-        .login-field {
-            width: 100%;
+        .sign-up-field {
             gap: 10px;
+
+            .user-name {
+                gap: 10px;
+            }
 
             .field-wrapper {
                 .input-field {
@@ -64,23 +67,13 @@ export const LoginWrapper = styled.div`
                     }
                 }
             }
+        }
 
-            .msg-section {
-                gap: 20px;
-
-                .password-msg {
-                    text-transform: capitalize;
-                    text-decoration: underline;
-                    cursor: pointer;
-                }
-
-                .sign-up-container {
-                    .sign-up {
-                        margin: 0 0 0 5px;
-                        text-decoration: underline;
-                        cursor: pointer;
-                    }
-                }
+        .login-container {
+            .login-text {
+                margin: 0 0 0 5px;
+                text-decoration: underline;
+                cursor: pointer;
             }
         }
     }
