@@ -72,6 +72,7 @@ const LogIn = () => {
             }
             setIsLoading(false);
         } catch (error) {
+            console.log('login submit error running');
             setIsLoading(false);
             if (error?.response?.status === CODES.PRECONDITION_FAILED) {
                 navigate(URL_VERIFY_EMAIL, {
