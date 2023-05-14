@@ -21,7 +21,17 @@ import Api from 'Helpers/ApiHandler';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import CustomButton from 'Components/Common/CustomBtn/CustomButton';
-import { URL_RESET_PASSWORD, URL_SIGN_UP } from 'Helpers/Path';
+import {
+    API_URL,
+    URL_HOME_PAGE,
+    URL_RESET_PASSWORD,
+    URL_SIGN_UP,
+    URL_VERIFY_EMAIL
+} from 'Helpers/Path';
+import Loader from 'Components/Common/Loader';
+import CODES from 'Helpers/StatusCodes';
+import { loginUser } from 'Redux/Auth/Actions';
+import { userProfileData } from 'Redux/App/Actions';
 
 const validationSchema = Yup.object({
     email: Yup.string()
@@ -46,13 +56,39 @@ const LogIn = () => {
     const API = useMemo(() => new Api(), []);
 
     const [passwordVisibility, setPasswordVisibility] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (values) => {
-        console.log('handelSUbmit values', values);
+        try {
+            setIsLoading(true);
+            const response = await API.post(API_URL.LOGIN, {
+                data: values
+            });
+
+            if (response?.status === CODES.SUCCESS) {
+                dispatch(loginUser(response?.data?.data));
+                dispatch(userProfileData(response?.data?.data));
+                navigate(URL_HOME_PAGE);
+            }
+            setIsLoading(false);
+        } catch (error) {
+            setIsLoading(false);
+            if (error?.response?.status === CODES.PRECONDITION_FAILED) {
+                navigate(URL_VERIFY_EMAIL, {
+                    state: { email: values?.email, password: values?.password }
+                });
+            }
+
+            if (error?.response?.status === CODES.NOT_FOUND) {
+                navigate(URL_SIGN_UP);
+            }
+            console.log('login component and handleSubmit func', error);
+        }
     };
 
     return (
         <LoginWrapper className="flex f-h-center f-v-center">
+            <Loader isLoading={isLoading} />
             <Box className="login-screen flex f-column f-v-center">
                 <Box className="heading flex f-v-center">
                     <Typography className="title">Login</Typography>

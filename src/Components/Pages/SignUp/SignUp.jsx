@@ -19,7 +19,9 @@ import { PASSWORD_REGEX } from 'Helpers/Constants';
 import Api from 'Helpers/ApiHandler';
 import CustomButton from 'Components/Common/CustomBtn/CustomButton';
 import { SignUpWrapper } from './SignUp.style';
-import { URL_LOGIN } from 'Helpers/Path';
+import { URL_LOGIN, API_URL, URL_VERIFY_EMAIL } from 'Helpers/Path';
+import { showToast } from 'Redux/App/Actions';
+import CODES from 'Helpers/StatusCodes';
 
 const SignUpInitValue = {
     firstName: '',
@@ -55,7 +57,21 @@ const SignUp = () => {
     const [confirmPasswordVisibility, setConfirmPasswordVisibility] = useState(false);
 
     const handleSubmit = async (values) => {
-        console.log('handelSUbmit values', values);
+        try {
+            const response = await API.post(API_URL.SIGN_UP, {
+                data: values
+            });
+
+            console.log(response?.message);
+            if (response?.status === CODES.CREATED) {
+                dispatch(showToast(response?.data?.message));
+                navigate(URL_VERIFY_EMAIL, {
+                    state: { email: values?.email, password: values?.password }
+                });
+            }
+        } catch (error) {
+            console.log('sign up page on handle submit', error.message);
+        }
     };
 
     return (

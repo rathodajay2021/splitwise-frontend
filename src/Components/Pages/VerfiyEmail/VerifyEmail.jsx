@@ -9,8 +9,12 @@ import BackIcon from 'Assets/Images/icons/backIcon.png';
 
 //CUSTOM
 import Api from 'Helpers/ApiHandler';
-import { showToast } from 'Redux/App/Actions';
+import { showToast, userProfileData } from 'Redux/App/Actions';
 import { VerifyEmailWrapper } from './VerifyEmail.style';
+import CODES from 'Helpers/StatusCodes';
+import { API_URL, URL_HOME_PAGE } from 'Helpers/Path';
+import { loginUser } from 'Redux/Auth/Actions';
+import Loader from 'Components/Common/Loader';
 
 const VerifyEmail = () => {
     const navigate = useNavigate();
@@ -27,7 +31,7 @@ const VerifyEmail = () => {
 
     const [isValidOTP, setIsValidOTP] = useState(false);
     const [code, setCode] = useState([]);
-    // const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const hideEmailId = (email) => {
         if (!email) return;
@@ -113,11 +117,49 @@ const VerifyEmail = () => {
     };
 
     const verifyOtp = useCallback(async () => {
-        console.log('verify otp');
-    }, [API, location?.state?.email, location?.state?.password, code, dispatch, navigate]);
+        try {
+            setIsLoading(true);
+            const response = await API.post(API_URL.VERIFY_OTP, {
+                data: {
+                    email: location?.state?.email,
+                    otp: code.join('')
+                }
+            });
+
+            if (response) {
+                setIsValidOTP(false);
+                dispatch(loginUser(response?.data?.data));
+                dispatch(userProfileData(response?.data?.data));
+                navigate(URL_HOME_PAGE);
+            }
+            setIsLoading(false);
+        } catch (error) {
+            setIsLoading(false);
+            console.log('verify email component and verify otp func', error);
+        }
+    }, [API, location?.state?.email, code, dispatch, navigate]);
 
     const resendOtp = async () => {
-        console.log('resend otp');
+        try {
+            setIsLoading(true);
+            setCode([]);
+            REFS.forEach((item) => (item.current.value = ''));
+
+            const response = await API.post(API_URL.RESEND_OTP_URL, {
+                data: { email: location?.state?.email }
+            });
+
+            if (response.status === CODES.SUCCESS) {
+                dispatch(showToast(response?.data?.message));
+            }
+
+            inputRef1.current.focus();
+            setIsValidOTP(false);
+            setIsLoading(false);
+        } catch (error) {
+            console.log('verify email component resendOtp function', error);
+            setIsLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -132,6 +174,7 @@ const VerifyEmail = () => {
 
     return (
         <VerifyEmailWrapper className="flex f-v-center f-h-center">
+            <Loader isLoading={isLoading} />
             <Box className="container">
                 <Box className="mail-img"></Box>
                 <IconButton className="back-icon" onClick={() => navigate(-1)}>
