@@ -14,5 +14,6 @@ export const API_URL = {
     VERIFY_OTP: 'auth/verify-otp',
     LOGIN: 'auth/login',
     VERIFY_EMAIL: 'auth/verify-email',
-    RESET_PASSWORD: 'auth/reset-password'
+    RESET_PASSWORD: 'auth/reset-password',
+    GET_USERS: 'users/get'
 };

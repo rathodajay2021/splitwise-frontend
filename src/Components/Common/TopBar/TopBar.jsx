@@ -8,10 +8,12 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from 'Redux/Auth/Actions';
 import { COLORS } from 'Styles/Constants';
+import DeleteDialog from '../DeleteDialog';
 
-const TopBar = (props) => {
+const TopBar = () => {
     const dispatch = useDispatch();
     const [openMenu, setOpenMenu] = useState(null);
+    const [logoutModel, setLogoutModel] = useState(false);
     const userInfo = useSelector((state) => state.App.userData);
 
     const handleGroup = () => {};
@@ -42,11 +44,22 @@ const TopBar = (props) => {
             <Menu anchorEl={openMenu} open={Boolean(openMenu)} onClose={() => setOpenMenu(null)}>
                 <MenuItem onClick={handleGroup}>Create Group</MenuItem>
                 <Divider />
-                <MenuItem onClick={handleLogout}>
+                <MenuItem
+                    onClick={() => {
+                        setLogoutModel(true);
+                        setOpenMenu(null);
+                    }}>
                     <LogoutIcon />
                     Logout
                 </MenuItem>
             </Menu>
+            {logoutModel && (
+                <DeleteDialog
+                    text={'Are you sure you want to logout'}
+                    onClose={() => setLogoutModel(false)}
+                    onConfirm={handleLogout}
+                />
+            )}
         </TopBarWrapper>
     );
 };

@@ -72,14 +72,14 @@ const LogIn = () => {
             }
             setIsLoading(false);
         } catch (error) {
-            console.log('login submit error running');
             setIsLoading(false);
+            console.log('login submit error running');
             if (error?.response?.status === CODES.PRECONDITION_FAILED) {
                 navigate(URL_VERIFY_EMAIL, {
                     state: { email: values?.email, password: values?.password }
                 });
             }
-
+            
             if (error?.response?.status === CODES.NOT_FOUND) {
                 navigate(URL_SIGN_UP);
             }
